@@ -9,9 +9,10 @@
         <title>List Person</title>
     </h:head>
     <h:body>
+        
         <p:ajaxStatus style="width: 16px; height: 16px;" id="ajaxStatusPanel">
             <f:facet name="start">
-                <h:graphicImage library="images" name="ajaxloading.gif" />
+                <h:graphicImage library="imgs" name="ajaxloading.gif" />
             </f:facet>
             
             <f:facet name="complete">
@@ -19,12 +20,21 @@
             </f:facet>
         </p:ajaxStatus>
         
-        <h:form prependId="false">
-            <p:growl id="mesages" showDetail="true" />
-            <p:dataTable value="#{personBean.people}" var="person" editable="true">
+        <h:form id="listPeopleForm">
+            <p:growl id="messages" showDetail="true" />
+            <p:messages />
+            
+            <p:dataTable id="peopleDataTable" value="#{personBean.people}" var="person" 
+                         editable="true" rowKey="#{person.idPerson}" style="text-align: center"
+                         selection="#{personBean.selectedPerson}" selectionMode="single">
+                
                 <f:facet name="header">List person</f:facet>
                 
-                <p:column headerText="Name"> 
+                <p:column headerText="Id" style="text-align: center"> 
+                    <h:outputText value="#{person.idPerson}" />
+                </p:column>
+                
+                <p:column headerText="Name" style="text-align: center"> 
                     <p:cellEditor>
                         <f:facet name="output">
                             <h:outputText value="#{person.name}" />
@@ -35,7 +45,7 @@
                     </p:cellEditor>
                 </p:column>
                 
-                <p:column headerText="Lastname"> 
+                <p:column headerText="Lastname" style="text-align: center"> 
                     <p:cellEditor>
                         <f:facet name="output">
                             <h:outputText value="#{person.lastname}" />
@@ -46,7 +56,7 @@
                     </p:cellEditor>
                 </p:column>
                 
-                <p:column headerText="Email"> 
+                <p:column headerText="Email" style="text-align: center"> 
                     <p:cellEditor>
                         <f:facet name="output">
                             <h:outputText value="#{person.email}" />
@@ -57,7 +67,7 @@
                     </p:cellEditor>
                 </p:column>
                 
-                <p:column headerText="Phone"> 
+                <p:column headerText="Phone" style="text-align: center"> 
                     <p:cellEditor>
                         <f:facet name="output">
                             <h:outputText value="#{person.phone}" />
@@ -69,17 +79,56 @@
                 </p:column>
                 
                 <f:facet name="footer">
-                    <h:commandButton value="Return" action="index" />
+                    <p:commandButton value="Return" action="index" style="align-self: center" />
+                    <p:spacer height="5px" />
+                    <p:commandButton value="Add" actionListener="#{personBean.restartSelectedPerson}"
+                                     update=":dialogForm" oncomplete="PF('personDialog').show()" />
                 </f:facet>
                 
                 <p:column headerText="Options" style="width: 50px">
-                    <p:rowEditor/>
+                    <p:rowEditor />
                 </p:column>
                 
                 <p:ajax event="rowEdit" listener="#{personBean.editListener}" />
                 
             </p:dataTable>
+            
+            <p:contextMenu for="peopleDataTable">
+                <p:menuitem value="Delete" update="listPeopleForm:peopleDataTable"
+                            icon="ui-icon-close" actionListener="#{personBean.deletePerson}" />
+            </p:contextMenu>
+            
         </h:form>
+        
+        <p:dialog id="personDlg" widgetVar="personDialog" header="Add person"
+                  modal="true" showEffect="fade" hideEffect="fade" resizable="true">
+            <h:form id="dialogForm">
+                <p:outputPanel id="personDetail" style="text-align: center">
+                    <p:panelGrid id="display" columns="4" columnClasses="label, value">
+                        
+                        <h:outputText value="Name" />
+                        <h:inputText  value="#{personBean.selectedPerson.name}" />
+                        
+                        <h:outputText value="lastname" />
+                        <h:inputText value="#{personBean.selectedPerson.lastname}" />
+                        
+                        <h:outputText value="Email" />
+                        <h:inputText value="#{personBean.selectedPerson.email}" />
+                        
+                        <h:outputText value="Phone" />
+                        <h:inputText value="#{personBean.selectedPerson.phone}" />
+                        
+                        <f:facet name="footer"> 
+                            <p:commandButton value="Add" actionListener="#{personBean.addPerson}"
+                                             update="display,:listPeopleForm:peopleDataTable" 
+                                             oncomplete="PF('personDialog').hide();" />
+                        </f:facet>
+                        
+                    </p:panelGrid>
+                </p:outputPanel>
+            </h:form>
+        </p:dialog>
+        
     </h:body>
 </html>
 

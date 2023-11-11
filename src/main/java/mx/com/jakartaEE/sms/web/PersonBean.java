@@ -54,4 +54,20 @@ public class PersonBean {
     public void setPeople(List<Person> people) {
         this.people = people;
     }
+    
+    public void addPerson() {
+        this.personService.addPerson(selectedPerson);
+        this.people.add(selectedPerson);
+        this.selectedPerson = null;
+    }
+    
+    public void deletePerson() {
+        this.personService.deletePerson(selectedPerson);
+        this.people.remove(this.selectedPerson);
+        this.selectedPerson = null;
+    }
+    
+    public void restartSelectedPerson() {
+        this.selectedPerson = new Person();
+    }
 }
